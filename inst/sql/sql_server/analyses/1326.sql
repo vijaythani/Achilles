@@ -13,7 +13,7 @@ INTO
 FROM (
 	SELECT 'drug_exposure' cdm_table,
 		COALESCE(vd.visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.drug_exposure de
 	LEFT JOIN 
@@ -28,7 +28,7 @@ FROM (
 	SELECT 
 		'condition_occurrence' cdm_table,
 		COALESCE(vd.visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.condition_occurrence co
 	LEFT JOIN 
@@ -43,7 +43,7 @@ FROM (
 	SELECT 
 		'device_exposure' cdm_table,
 		COALESCE(visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.device_exposure de
 	LEFT JOIN 
@@ -58,7 +58,7 @@ FROM (
 	SELECT 
 		'procedure_occurrence' cdm_table,
 		COALESCE(vd.visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.procedure_occurrence po
 	LEFT JOIN 
@@ -73,7 +73,7 @@ FROM (
 	SELECT 
 		'measurement' cdm_table,
 		COALESCE(vd.visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.measurement m
 	LEFT JOIN 
@@ -88,7 +88,7 @@ FROM (
 	SELECT 
 		'observation' cdm_table,
 		COALESCE(vd.visit_detail_concept_id, 0) visit_detail_concept_id,
-		COUNT(*) record_count
+		COUNT_BIG(*) record_count
 	FROM 
 		@cdmDatabaseSchema.observation o
 	LEFT JOIN 
