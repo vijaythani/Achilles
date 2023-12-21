@@ -1125,24 +1125,33 @@ optimizeAtlasCache <- function(connectionDetails,
 }
 
 .parseLogs <- function(outputFolder) {
-  logs <- utils::read.table(
+  logs <- tryCatch({
+    utils::read.table(
       file = file.path(
-          outputFolder,
-          "log_achilles.txt"
+        outputFolder,
+        "log_achilles.txt"
       ),
       header = FALSE,
       sep = "\t",
       stringsAsFactors = FALSE
-  )
-  names(logs) <- c("startTime", "thread", "logType", "package", "packageFunction", "comment")
-  logs <- logs[grepl(pattern = "COMPLETE", x = logs$comment), ]
-  logs$analysisId <- logs$runTime <- NA
+    )
+  }, error = function(e) {
+    warning(paste("Error reading log_achilles.txt:", e))
+    return(NULL)
+  })
 
-  for (i in 1:nrow(logs)) {
+  if (!is.null(logs)) {
+    names(logs) <- c("startTime", "thread", "logType", "package", "packageFunction", "comment")
+    logs <- logs[grepl(pattern = "COMPLETE", x = logs$comment), ]
+    logs$analysisId <- logs$runTime <- NA
+
+    for (i in 1:nrow(logs)) {
       logs[i, ]$analysisId <- .parseAnalysisId(logs[i, ]$comment)
       logs[i, ]$runTime <- .parseRunTime(logs[i, ]$comment)
+    }
   }
-  logs
+
+  return(logs)
 }
 
 .formatName <- function(name) {
