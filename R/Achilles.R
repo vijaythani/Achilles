@@ -1126,22 +1126,30 @@ optimizeAtlasCache <- function(connectionDetails,
 
 .parseLogs <- function(outputFolder) {
   logs <- tryCatch({
-    utils::read.table(
-      file = file.path(
-        outputFolder,
-        "log_achilles.txt"
-      ),
-      header = FALSE,
-      sep = "\t",
-      stringsAsFactors = FALSE
-    )
+    # Read the file line by line
+    lines <- readLines(file.path(outputFolder, "log_achilles.txt"))
+    
+    # Split each line into elements
+    lines <- strsplit(lines, "\t")
+    
+    # Filter out lines that don't have six elements
+    lines <- lines[sapply(lines, length) == 6]
+    
+    # Combine the lines back into a data frame
+    df <- do.call(rbind, lines)
+    
+    # Convert the data frame to the desired types
+    df <- data.frame(df, stringsAsFactors = FALSE)
+    colnames(df) <- c("startTime", "thread", "logType", "package", "packageFunction", "comment")
+    df$startTime <- as.POSIXct(df$startTime, format = "%Y-%m-%d %H:%M:%S")
+    
+    df
   }, error = function(e) {
     warning(paste("Error reading log_achilles.txt:", e))
     return(NULL)
   })
 
   if (!is.null(logs)) {
-    names(logs) <- c("startTime", "thread", "logType", "package", "packageFunction", "comment")
     logs <- logs[grepl(pattern = "COMPLETE", x = logs$comment), ]
     logs$analysisId <- logs$runTime <- NA
 
